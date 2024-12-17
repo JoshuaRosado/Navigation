@@ -10,34 +10,54 @@ import SwiftUI
 
 
 struct ContentView: View {
-    // Using a path Destination
-    @State private var path = [Int]()
+    
+    @State private var path = NavigationPath()
+    
+    // NavigatoinPath is what we call a TYPE-ERASER
+    // it stores any kind of Hashable data without exposing exactly what type of data each item is.
     
     var body: some View {
-        // Selecting path = $path
+        
+        // BIND THE PATH to SOMETHING
+        
         NavigationStack(path: $path){
-            VStack{
-                Button("Show 32") { // Tap
-                    path = [32] // Show 32
+            List{
+                ForEach(0..<5) { i in
+                    NavigationLink("Select Number: \(i)", value: i)
                 }
                 
-                Button("Show 64"){
-                    path.append(64) // Add 64 to the Path and Display it
+                ForEach(0..<5) { i in
+                    NavigationLink("Select String: \(i)", value: String(i))
+                    
                 }
-                
-                Button("Show 32 then 64"){
-                    path = [32,64] // Display 2 destinations in path
-                }
-                
             }
-            // Destionation for Integer itself
-            .navigationDestination(for: Int.self)
-                { selection in // passing in a selection
-                Text("You selected \(selection)")}
             
+            .toolbar {
+                Button("Push 435") {
+                    // adding an INT
+                    path.append(435)
+                }
+                
+                Button("Push Leya") {
+                    // adding a String
+                    path.append("Leya")
+                }
+            }
+            
+            // Destination  = Int itself
+            .navigationDestination(for: Int.self) { selection in
+            Text("You selected the number \(selection)")
+            }
+            
+            // Destination = String itself
+            .navigationDestination(for: String.self) { selection in
+            Text("You selected the string \(selection)")
+            }
         }
+        
     }
 }
+    
 
 #Preview {
     ContentView()
