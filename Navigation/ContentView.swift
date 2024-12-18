@@ -7,53 +7,49 @@
 
 import SwiftUI
 
-
-
-struct ContentView: View {
+struct DetailView: View {
+    var number: Int
+    @Binding var path: [Int]
     
-    @State private var path = NavigationPath()
-    
-    // NavigatoinPath is what we call a TYPE-ERASER
-    // it stores any kind of Hashable data without exposing exactly what type of data each item is.
+    // The @Binding property wrapper lets us pass an @State property into a another view and modify it from there
+      
+    // *** Using NavigationPath()
+//    @Binding var path: NavigationPath
     
     var body: some View {
+        // Value pushed is a random Int between 1 - 1000
+        NavigationLink("Got to Random Number", value: Int.random(in: 1...1000))
+            .navigationTitle("Number: \(number)")
+            .toolbar{
+                Button("Home"){
+                    path.removeAll() // CLEAR EVERYTHING IN THE PATH
+                    
+                    // *** Using NavigationPath()
+                    // path = an empty path
+//                    path = NavigationPath()
+                }
+            }
         
-        // BIND THE PATH to SOMETHING
+    }
+}
+
+struct ContentView: View {
+    // Array for a path to generate random INT into it
+    @State private var path = [Int]()
+    
+    // *** Using NavigationPath()
+//    @State private var path = NavigationPath()
+    var body: some View {
         
         NavigationStack(path: $path){
-            List{
-                ForEach(0..<5) { i in
-                    NavigationLink("Select Number: \(i)", value: i)
+            DetailView(number: 0, path: $path) // initial value of 0
+                .navigationDestination(for: Int.self) { i in
+                    // every Random INT generated, will become the path once selected
+                    DetailView(number: i, path: $path)
                 }
-                
-                ForEach(0..<5) { i in
-                    NavigationLink("Select String: \(i)", value: String(i))
-                    
-                }
-            }
             
-            .toolbar {
-                Button("Push 435") {
-                    // adding an INT
-                    path.append(435)
-                }
-                
-                Button("Push Leya") {
-                    // adding a String
-                    path.append("Leya")
-                }
-            }
-            
-            // Destination  = Int itself
-            .navigationDestination(for: Int.self) { selection in
-            Text("You selected the number \(selection)")
-            }
-            
-            // Destination = String itself
-            .navigationDestination(for: String.self) { selection in
-            Text("You selected the string \(selection)")
-            }
         }
+        
         
     }
 }
