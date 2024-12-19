@@ -6,46 +6,108 @@
 //
 
 import SwiftUI
+// Two ways for saving paths
+// OPTION 1  -> Array of Int
+// OPTION 2 -> NavigationPath()
+
+@Observable
+class PathStore {
+    var path: [Int]{
+        
+        // OPTION 2 -> NavigationPath()
+    // var path: NavigationPath()
+        
+        didSet { // When that changes
+            save() // call func
+        }
+    }
+    
+    // Path to write things into
+    private let savePath = URL.documentsDirectory.appending(path: "SavedPath")
+    
+    
+    init() { // loading data back up and putting into the path array
+        
+        // if data is loaded
+        if let data = try? Data(contentsOf: savePath) {
+            
+            // if found, loaded and decoded
+            if let decoded = try?
+                
+                // OPTION 2 -> NavigationPath()
+            // JSONDecoder().decode(NavigationPath.CodableRepresentation.self, from :data)
+                
+                JSONDecoder().decode([Int].self, from :data) {
+                // our path will be the following
+                path = decoded
+                
+                // OPTION 2 -> NavigationPath()
+                // make a path out of that decoded data
+                
+                // path = NavigationPath(decoded)
+            
+                return
+            }
+        }
+        // if NO data was loaded, found and decoded
+        // stay with an EMPTY path
+        
+        path = []
+        // OPTION 2 -> NavigationPath()
+        
+        // path = NavigationPath()
+    }
+    
+    func save() {
+        
+        // OPTION 2 -> NavigationPath()
+        // retrieve our piece of data or bail out if there's nothing
+        
+        // adding this Check
+
+    // guard let representation = path.codable else {return}
+        
+        do {
+            
+            // OPTION 2 -> NavigationPath()
+        // let data = try JSONEncoder().encode(representation)
+            
+            // if data loaded and decoded
+            let data = try JSONEncoder().encode(path)
+            // write it and save into Path
+            try data.write(to: savePath)
+        } catch {
+            // else display message
+            print("Failed to save navigation data")
+        }
+    }
+}
 
 struct DetailView: View {
     var number: Int
-    @Binding var path: [Int]
+
     
-    // The @Binding property wrapper lets us pass an @State property into a another view and modify it from there
-      
-    // *** Using NavigationPath()
-//    @Binding var path: NavigationPath
+
     
     var body: some View {
-        // Value pushed is a random Int between 1 - 1000
+
         NavigationLink("Got to Random Number", value: Int.random(in: 1...1000))
             .navigationTitle("Number: \(number)")
-            .toolbar{
-                Button("Home"){
-                    path.removeAll() // CLEAR EVERYTHING IN THE PATH
-                    
-                    // *** Using NavigationPath()
-                    // path = an empty path
-//                    path = NavigationPath()
-                }
-            }
+            
         
     }
 }
 
 struct ContentView: View {
-    // Array for a path to generate random INT into it
-    @State private var path = [Int]()
+    @State private var pathStore = PathStore()
     
-    // *** Using NavigationPath()
-//    @State private var path = NavigationPath()
     var body: some View {
         
-        NavigationStack(path: $path){
-            DetailView(number: 0, path: $path) // initial value of 0
+        NavigationStack(path: $pathStore.path){
+            DetailView(number: 0)
                 .navigationDestination(for: Int.self) { i in
-                    // every Random INT generated, will become the path once selected
-                    DetailView(number: i, path: $path)
+                    
+                    DetailView(number: i)
                 }
             
         }
