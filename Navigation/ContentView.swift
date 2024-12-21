@@ -13,19 +13,29 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            List(0..<100) { i in
-                Text("Row \(i)")
+            Text("Hello, World")
+                .toolbar{
+                    //**** SINGULAR - Specifying exact placement location
+                    ToolbarItem(placement: .topBarLeading){
+                        Button("Tap me"){
+                            // button action
+                        }
+                    }
+                }
+            
+                .toolbar{
+                    // **** PLURAL - Specifying exact placement location
+                    ToolbarItemGroup(placement: .topBarLeading){
+                        Button("Tap me"){
+                            // button action
+                        }
+                        Button("Next"){
+                            
+                        }
+                    }
+                }
             }
-            .navigationTitle("Title goes here")
-            .navigationBarTitleDisplayMode(.inline)
-            // navbar background color
-            .toolbarBackground(.blue)
-            // applying colorScheme for text in navbar
-            .toolbarColorScheme(.dark)
-            // making navbar hidden, for: Specify navbar
-            .toolbar(.hidden, for: .navigationBar)
         }
-    }
 }
     
 
